@@ -39,6 +39,10 @@ class AccountController extends Controller
        		
        		// Create a bank account
        		$this->createBankAccount($company);
+       		
+       		$command = $connection->createCommand('UPDATE company SET bank_account_created = NOW()');
+       		$companies = $command->query();
+       		
        		echo "\n";
        	}
     }
@@ -76,7 +80,6 @@ class AccountController extends Controller
     	$bankAccount->name = "Checking account";
     	$bankAccount->bank_user_id = $bankUser->id;
     	$bankSuccess = $bankAccount->save() AND $bankSuccess;
-    	print_r($bankAccount->errors);
     	
     	$this->debug("Created an account: ".$bankAccount->iban);
     }
