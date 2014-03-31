@@ -11,6 +11,7 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use Yii;
 use yii\web\VerbFilter;
+use app\models\Company;
 
 /**
  * Site controller
