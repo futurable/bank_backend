@@ -31,6 +31,7 @@ class AccountController extends Controller
        	
        	$this->debug( count($companies). " companies found");
        	
+       	$created = 0;
        	foreach($companies as $tmpcompany){
        		$company = new Company();
        		$company->attributes = $tmpcompany;
@@ -42,13 +43,20 @@ class AccountController extends Controller
        		
        		$command = $connection->createCommand('UPDATE company SET bank_account_created = NOW()');
        		$companies = $command->query();
+       		$created++;
        		
-       		echo "\n";
+       		$this->debug();
        	}
+       	
+       	$this->debug("Created $created bank accounts");
+       	$this->debug("Done!");
     }
 
-    private function debug($message){
-    	$debugMessage = date('d-m-Y H:i:s')." ".$message."\n";
+    private function debug($message = false){
+    	if($message===false) $debugMessage = "\n";
+    	
+    	else $debugMessage = date('d-m-Y H:i:s')." ".$message."\n";
+    	
     	echo $debugMessage;
 		if($this->debug === true);
     }
