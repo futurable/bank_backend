@@ -35,6 +35,7 @@ class AccountController extends Controller
        	foreach($companies as $tmpcompany){
        		$company = new Company();
        		$company->attributes = $tmpcompany;
+       		$company->id = $tmpcompany['id'];
        		
        		$this->debug("Using company '".$company->name."'");
        		
@@ -42,7 +43,7 @@ class AccountController extends Controller
        		$this->createBankAccount($company);
        		
        		$command = $connection->createCommand('UPDATE company SET bank_account_created = NOW()');
-       		$companies = $command->query();
+       		$command->query();
        		$created++;
        		
        		$this->debug();
@@ -88,6 +89,13 @@ class AccountController extends Controller
     	$bankAccount->name = "Checking account";
     	$bankAccount->bank_user_id = $bankUser->id;
     	$bankSuccess = $bankAccount->save() AND $bankSuccess;
+    	
+    	// TODO: fix this hack
+    	$connection = \Yii::$app->db_core;
+    	
+    	// @TODO: Fix this to use AR
+    	$command = $connection->createCommand("INSERT INTO company_passwords SET bank_password = '{$bankPassword}', company_id ='{$company->id}'");
+    	$command->query();
     	
     	$this->debug("Created an account: ".$bankAccount->iban);
     }
