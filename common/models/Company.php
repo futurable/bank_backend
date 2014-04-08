@@ -2,6 +2,9 @@
 
 namespace common\models;
 
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+
 /**
  * This is the model class for table "company".
  *
@@ -15,11 +18,15 @@ namespace common\models;
  * @property string $create_time
  * @property string $bank_account_created
  * @property string $openerp_database_created
+ * @property string $backend_user_created
  * @property integer $token_key_id
  * @property integer $industry_id
+ * @property integer $token_customer_id
  *
- * @property Industry $industry
+ * @property TokenCustomer $tokenCustomer
  * @property TokenKey $tokenKey
+ * @property Industry $industry
+ * @property CompanyPasswords[] $companyPasswords
  * @property CostbenefitCalculation[] $costbenefitCalculations
  * @property Order[] $orders
  * @property Remark $remark
@@ -34,21 +41,21 @@ class Company extends \yii\db\ActiveRecord
 	{
 		return 'company';
 	}
-	
-    public static function getDb()
-    {
-        return \Yii::$app->db_core;
-    }
 
+	public static function getDb()
+	{
+	    return \Yii::$app->db_core;
+	}
+	
 	/**
 	 * @inheritdoc
 	 */
 	public function rules()
 	{
 		return [
-			[['name', 'tag', 'business_id', 'email', 'employees', 'token_key_id', 'industry_id'], 'required'],
-			[['employees', 'active', 'token_key_id', 'industry_id'], 'integer'],
-			[['create_time', 'bank_account_created', 'openerp_database_created'], 'safe'],
+			[['name', 'tag', 'business_id', 'email', 'employees', 'token_key_id', 'industry_id', 'token_customer_id'], 'required'],
+			[['employees', 'active', 'token_key_id', 'industry_id', 'token_customer_id'], 'integer'],
+			[['create_time', 'bank_account_created', 'openerp_database_created', 'backend_user_created'], 'safe'],
 			[['name', 'email'], 'string', 'max' => 256],
 			[['tag'], 'string', 'max' => 32],
 			[['business_id'], 'string', 'max' => 9],
@@ -72,9 +79,27 @@ class Company extends \yii\db\ActiveRecord
 			'create_time' => 'Create Time',
 			'bank_account_created' => 'Bank Account Created',
 			'openerp_database_created' => 'Openerp Database Created',
+			'backend_user_created' => 'Backend User Created',
 			'token_key_id' => 'Token Key ID',
 			'industry_id' => 'Industry ID',
+			'token_customer_id' => 'Token Customer ID',
 		];
+	}
+
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getTokenCustomer()
+	{
+		return $this->hasOne(TokenCustomer::className(), ['id' => 'token_customer_id']);
+	}
+
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getTokenKey()
+	{
+		return $this->hasOne(TokenKey::className(), ['id' => 'token_key_id']);
 	}
 
 	/**
@@ -88,9 +113,9 @@ class Company extends \yii\db\ActiveRecord
 	/**
 	 * @return \yii\db\ActiveQuery
 	 */
-	public function getTokenKey()
+	public function getCompanyPasswords()
 	{
-		return $this->hasOne(TokenKey::className(), ['id' => 'token_key_id']);
+		return $this->hasOne(CompanyPasswords::className(), ['company_id' => 'id']);
 	}
 
 	/**

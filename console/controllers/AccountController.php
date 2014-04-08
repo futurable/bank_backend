@@ -12,6 +12,7 @@ use common\models\BankProfile;
 use common\models\BankAccount;
 use common\commands\BBANComponent;
 use common\commands\IBANComponent;
+use yii\db\Expression;
 
 class AccountController extends Controller
 {
@@ -22,28 +23,24 @@ class AccountController extends Controller
     	
     	$this->debug("Create action started");
     	
-    	// TODO: fix this hack
-    	$connection = \Yii::$app->db_core;
-    	
        	// Get all the companies with no bank account
-       	$command = $connection->createCommand('SELECT * FROM company WHERE bank_account_created IS NULL');
-       	$companies = $command->query();
+        $companies = Company::find()
+        ->where('bank_account_created IS NULL')
+        ->all();
        	
        	$this->debug( count($companies). " companies found");
        	
        	$created = 0;
-       	foreach($companies as $tmpcompany){
-       		$company = new Company();
-       		$company->attributes = $tmpcompany;
-       		$company->id = $tmpcompany['id'];
-       		
+       	foreach($companies as $company){
        		$this->debug("Using company '".$company->name."'");
        		
        		// Create a bank account
        		$this->createBankAccount($company);
+
+       		// @TODO: Fix this to use DbExpression
+       		$company->bank_account_created = date('Y-m-d H:i:s');
+       		$company->save();
        		
-       		$command = $connection->createCommand('UPDATE company SET bank_account_created = NOW()');
-       		$command->query();
        		$created++;
        		
        		$this->debug();
@@ -90,12 +87,9 @@ class AccountController extends Controller
     	$bankAccount->bank_user_id = $bankUser->id;
     	$bankSuccess = $bankAccount->save() AND $bankSuccess;
     	
-    	// TODO: fix this hack
-    	$connection = \Yii::$app->db_core;
-    	
-    	// @TODO: Fix this to use AR
-    	$command = $connection->createCommand("INSERT INTO company_passwords SET bank_password = '{$bankPassword}', company_id ='{$company->id}'");
-    	$command->query();
+        $companyPasswords = $company->companyPasswords;
+        $companyPasswords->bank_password = $bankPassword;
+        $companyPasswords->save();
     	
     	$this->debug("Created an account: ".$bankAccount->iban);
     }
