@@ -2,8 +2,8 @@
 
 return [
 	'class' => 'yii\db\Connection',
-	'dsn' => 'mysql:host=futurality.fi;dbname=futural_bank',
+	'dsn' => 'mysql:host=futurality.fi;dbname=futural2_bank',
 	'username' => 'futural_bank',
-	'password' => 'futural_core',
+	'password' => 'futural',
 	'charset' => 'utf8',
 ];
