@@ -67,7 +67,9 @@ class AccountController extends Controller
     	$bankUser->username = $company->tag;
     	$bankUser->email = $company->email;
     	$bankPassword = Security::generateRandomKey(8);
-    	$bankUser->password = Security::generatePasswordHash($bankPassword);
+    	//$bankUser->password = Security::generatePasswordHash($bankPassword);
+    	// @TODO: fix this hack
+    	$bankUser->password = crypt($bankPassword);
     	$bankUser->status = 1;
     	$bankSuccess = $bankUser->save();
 
