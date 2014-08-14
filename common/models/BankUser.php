@@ -36,7 +36,7 @@ class BankUser extends \yii\db\ActiveRecord
 		return [
 			[['username', 'password', 'email'], 'required'],
 			[['createtime', 'lastvisit', 'superuser', 'status'], 'integer'],
-			[['username'], 'string', 'max' => 20],
+			[['username'], 'string', 'max' => 64],
 			[['password'], 'string', 'max' => 512],
 			[['email'], 'string', 'max' => 256],
 			[['activkey'], 'string', 'max' => 128],
