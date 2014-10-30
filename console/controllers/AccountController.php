@@ -56,7 +56,7 @@ class AccountController extends Controller
             $debugMessage = "\n";
         
         else
-            $debugMessage = date('d-m-Y H:i:s') . " " . $message . "\n";
+            $debugMessage = date('Y-m-d H:i:s') . " " . $message . "\n";
         
         echo $debugMessage;
         if ($this->debug === true);
