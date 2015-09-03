@@ -5,7 +5,7 @@ use Yii;
 use yii\console\Controller;
 use common\models\Company;
 use yii\db\QueryBuilder;
-use yii\helpers\Security;
+use yii\base\Security;
 use yii\db\Transaction;
 use common\models\BankUser;
 use common\models\BankProfile;
@@ -13,6 +13,7 @@ use common\models\BankAccount;
 use common\commands\BBANComponent;
 use common\commands\IBANComponent;
 use yii\db\Expression;
+use common\models\CompanyPasswords;
 
 class AccountController extends Controller
 {
@@ -65,12 +66,12 @@ class AccountController extends Controller
     private function createBankAccount($company)
     {
         // TODO: Start transaction
-        
+
         // Create bank user
         $bankUser = new BankUser();
         $bankUser->username = $company->tag;
         $bankUser->email = $company->email;
-        $bankPassword = Security::generateRandomKey(8);
+        $bankPassword = Yii::$app->getSecurity()->generateRandomString(8);
         // $bankUser->password = Security::generatePasswordHash($bankPassword);
         // @TODO: fix this hack
         $bankUser->password = md5($bankPassword);
@@ -93,7 +94,8 @@ class AccountController extends Controller
         $bankAccount->bank_user_id = $bankUser->id;
         $bankSuccess = $bankAccount->save() and $bankSuccess;
         
-        $companyPasswords = $company->companyPasswords;
+        $companyPasswords = new CompanyPasswords();
+        $companyPasswords->company_id = $company->id;
         $companyPasswords->bank_password = $bankPassword;
         $companyPasswords->save();
         
